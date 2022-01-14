@@ -47,16 +47,19 @@ MonoBehaviour:
   pluginVersion: 3.0.0
   refObjects: {fileID: 0}
   locomotion: {fileID: 0}
-  cameraRig: {fileID: 0}
-  headset: {fileID: 0}
+  splashScreen: {fileID: 0}
+  autoStart: 1
   firstLevel: 1
   movementLevel: 1
   guaranteeDestroyOnLoad: 0
-  speedGain: 1
-  worldScale: {x: 1, y: 1, z: 1}
   correctPosition: 0
   correctRotation: 0
   correctScale: 0
+  preferences: {fileID: 0}
+  cameraRig: {fileID: 0}
+  headset: {fileID: 0}
+  speedGain: 1
+  worldScale: {x: 1, y: 1, z: 1}
 --- !u!1001 &4838356386765045977
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -82,22 +85,22 @@ PrefabInstance:
     - target: {fileID: 8147708002330424993, guid: 348ce9111f12b0049986b3b23c5026ac,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8147708002330424993, guid: 348ce9111f12b0049986b3b23c5026ac,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 8147708002330424993, guid: 348ce9111f12b0049986b3b23c5026ac,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8147708002330424993, guid: 348ce9111f12b0049986b3b23c5026ac,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 8147708002330424993, guid: 348ce9111f12b0049986b3b23c5026ac,
         type: 3}
@@ -112,7 +115,7 @@ PrefabInstance:
     - target: {fileID: 8147708002330424993, guid: 348ce9111f12b0049986b3b23c5026ac,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 8147708002330424993, guid: 348ce9111f12b0049986b3b23c5026ac,
         type: 3}
@@ -127,7 +130,7 @@ PrefabInstance:
     - target: {fileID: 8018094136880289383, guid: 348ce9111f12b0049986b3b23c5026ac,
         type: 3}
       propertyPath: m_Text
-      value: 3.1.0
+      value: 3.0.0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 348ce9111f12b0049986b3b23c5026ac, type: 3}

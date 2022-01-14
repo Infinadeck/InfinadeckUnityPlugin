@@ -16,7 +16,7 @@ using Infinadeck;
 
 public class InfinadeckCore : MonoBehaviour
 {
-    [InfReadOnlyInEditor] public string pluginVersion = "3.0.0";
+    [InfReadOnlyInEditor] public string pluginVersion = "3.0.1";
     [InfReadOnlyInEditor] public GameObject refObjects;
     [InfReadOnlyInEditor] public GameObject locomotion;
     [InfReadOnlyInEditor] public GameObject splashScreen;
