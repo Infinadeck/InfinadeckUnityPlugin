@@ -138,12 +138,12 @@ public class InfinadeckCore : MonoBehaviour
         if (!cameraRig)
         {
             Debug.LogWarning("INFINADECK WARNING: No CameraRig Reference Assigned, Assuming Parented to CameraRig");
-            cameraRig = this.transform.parent.gameObject;
-            if (!cameraRig)
+            if (this.transform.parent == null)
             {
                 Debug.LogWarning("INFINADECK WARNING: No CameraRig Reference Assigned and No Parent, Self is CameraRig");
                 cameraRig = this.gameObject;
             }
+            else { cameraRig = this.transform.parent.gameObject; }
         }
         else
         {
