@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c2b4ed562e1cbc48ac9bbea328b52ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pluginVersion: 3.0.0
+  pluginVersion: 3.1.0
   refObjects: {fileID: 0}
   locomotion: {fileID: 0}
   splashScreen: {fileID: 0}
