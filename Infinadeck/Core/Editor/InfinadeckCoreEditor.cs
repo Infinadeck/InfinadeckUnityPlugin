@@ -29,6 +29,8 @@ public class InfinadeckMasterEditor : Editor
     SerializedProperty correctPosition;
     SerializedProperty correctRotation;
     SerializedProperty correctScale;
+    SerializedProperty showCollisions;
+    SerializedProperty showTreadmillVelocity;
 
     void OnEnable()
     {
@@ -44,6 +46,8 @@ public class InfinadeckMasterEditor : Editor
         correctPosition = serializedObject.FindProperty("correctPosition");
         correctRotation = serializedObject.FindProperty("correctRotation");
         correctScale = serializedObject.FindProperty("correctScale");
+        showCollisions = serializedObject.FindProperty("showCollisions");
+        showTreadmillVelocity = serializedObject.FindProperty("showTreadmillVelocity");
     }
 
     public override void OnInspectorGUI()
@@ -74,6 +78,8 @@ public class InfinadeckMasterEditor : Editor
             EditorGUILayout.PropertyField(correctPosition);
             EditorGUILayout.PropertyField(correctRotation);
             EditorGUILayout.PropertyField(correctScale);
+            EditorGUILayout.PropertyField(showCollisions);
+            EditorGUILayout.PropertyField(showTreadmillVelocity);
         }
             
         serializedObject.ApplyModifiedProperties();

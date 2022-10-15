@@ -32,6 +32,8 @@ public class InfinadeckCore : MonoBehaviour
     public bool correctPosition = false;
     public bool correctRotation = false;
     public bool correctScale = false;
+    public bool showCollisions = false;
+    public bool showTreadmillVelocity = false;
     private bool initialized = false;
 
     public InfinaDATA preferences;
@@ -194,6 +196,8 @@ public class InfinadeckCore : MonoBehaviour
             infinadeckLocomotion.worldScale = worldScale;
             infinadeckLocomotion.speedGain = speedGain;
             infinadeckLocomotion.infinadeckReferenceObj = refObjects.GetComponent<InfinadeckReferenceObjects>();
+            infinadeckLocomotion.showCollisions = showCollisions;
+            infinadeckLocomotion.showTreadmillVelocity = showTreadmillVelocity;
         }
     }
 

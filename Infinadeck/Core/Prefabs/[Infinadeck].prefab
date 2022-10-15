@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c2b4ed562e1cbc48ac9bbea328b52ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pluginVersion: 3.1.0
+  pluginVersion: 3.2.0
   refObjects: {fileID: 0}
   locomotion: {fileID: 0}
   splashScreen: {fileID: 0}
@@ -130,7 +130,7 @@ PrefabInstance:
     - target: {fileID: 8018094136880289383, guid: 348ce9111f12b0049986b3b23c5026ac,
         type: 3}
       propertyPath: m_Text
-      value: 3.0.0
+      value: 3.2.0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 348ce9111f12b0049986b3b23c5026ac, type: 3}
