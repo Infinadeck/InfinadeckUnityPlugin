@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Globalization;
 using System.IO;
 using IniParser;
 using IniParser.Model;
@@ -140,7 +141,7 @@ public class InfinaDATA : MonoBehaviour
     public float ReadFloat(string key)
     {
         float outfloat = 0f;
-        if (float.TryParse(all[key].EntryValue, out outfloat))
+        if (float.TryParse(all[key].EntryValue, NumberStyles.Any, CultureInfo.InvariantCulture, out outfloat))
         {
             return outfloat;
         }

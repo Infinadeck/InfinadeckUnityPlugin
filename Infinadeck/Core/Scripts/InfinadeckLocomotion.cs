@@ -25,15 +25,37 @@ public class InfinadeckLocomotion : MonoBehaviour
     public Vector3 worldScale = Vector3.one;
     public float speedGain = 1;
     public InfinadeckReferenceObjects infinadeckReferenceObj;
+    public bool showCollisions = false;
+    private Vector3 targetPosition = Vector3.zero;
+    private Vector3 previousFramePosition = Vector3.zero;
+    public bool showTreadmillVelocity = false;
+
+    public bool testShake = false;
+    public float testShakeStrength = .005f;
+
+    void Start()
+    {
+        targetPosition = cameraRig.transform.position;
+        previousFramePosition = cameraRig.transform.position;
+    }
+
     /**
      * Runs once per frame update.
      */
-    void Update () {
-
+    void Update()
+    {
         if (Infinadeck.Infinadeck.CheckConnection()) // only run if there is a successful connection
         {
+            if (Vector3.Distance(cameraRig.transform.position, previousFramePosition) > 0.001f)
+            {
+                if (showCollisions) { Debug.Log("Infinadeck Pre - Locomotion Check: User moved since last frame.Collision has occurred."); }
+            }
+
             // Import speeds from Infinadeck
-			SpeedVector2 speeds = Infinadeck.Infinadeck.GetFloorSpeeds();
+            SpeedVector2 speeds = Infinadeck.Infinadeck.GetFloorSpeeds();
+
+            if (showTreadmillVelocity) { Debug.Log(speeds.v0 + " " + speeds.v1); }
+
             // Distance = speed * time between samples
             //Debug.Log(speeds.v0 + "    " + speeds.v1);
             calcX = (float)speeds.v0 * (Time.deltaTime);
@@ -42,9 +64,22 @@ public class InfinadeckLocomotion : MonoBehaviour
             fixAngle = this.transform.eulerAngles.y* Mathf.Deg2Rad;
             xDistance =  (calcX * Mathf.Cos(fixAngle) + calcY * Mathf.Sin(fixAngle)) * worldScale.x * speedGain;
             yDistance = (-calcX * Mathf.Sin(fixAngle) + calcY * Mathf.Cos(fixAngle)) * worldScale.z * speedGain;
+
+            targetPosition = cameraRig.transform.position + new Vector3(xDistance, 0, yDistance);
+
+            if (testShake) { targetPosition += new Vector3(Random.Range(-testShakeStrength, testShakeStrength), 0, Random.Range(-testShakeStrength, testShakeStrength)); }
+
             // Move user based on treadmill motion as long as the deck is not calibrating
-            if (true) { cameraRig.transform.position += new Vector3(xDistance, 0, yDistance); } //Used to check to verify not calibrating
-            if (infinadeckReferenceObj) { infinadeckReferenceObj.currentTreadmillSpeed = Vector3.Magnitude(new Vector3((float)speeds.v0, (float)speeds.v1,0)); }
+            cameraRig.transform.position = targetPosition;
+
+            if (Vector3.Distance(cameraRig.transform.position, targetPosition) > 0.001f)
+            {
+                if (showCollisions) { Debug.Log("Infinadeck Post-Locomotion Check: User not moved to target location. Collision has occurred."); }
+            }
+
+            previousFramePosition = cameraRig.transform.position;
+
+            if (infinadeckReferenceObj) { infinadeckReferenceObj.currentTreadmillSpeed = Vector3.Magnitude(new Vector3((float)speeds.v0, (float)speeds.v1, 0)); }
         }
     }
 }

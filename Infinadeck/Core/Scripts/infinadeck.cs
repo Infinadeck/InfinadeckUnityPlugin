@@ -86,7 +86,10 @@ namespace Infinadeck
     [StructLayout(LayoutKind.Sequential)]
     public struct DiagnosticInfo
     {
-        SpeedVector2 v;
+        SpeedVector2 service_distance;
+        SpeedVector2 total_distance;
+        double service_hours;
+        double total_hours;
 
     }
     public class InfinadeckInterOp
@@ -105,12 +108,6 @@ namespace Infinadeck
 
         [DllImportAttribute("InfinadeckAPI", EntryPoint = "SetManualSpeeds", CallingConvention = CallingConvention.Cdecl)]
         internal static extern void SetManualSpeeds(double x, double y);
-
-        [DllImportAttribute("InfinadeckAPI", EntryPoint = "SetUserPosition", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void SetUserPosition(double x, double y);
-
-        [DllImportAttribute("InfinadeckAPI", EntryPoint = "SetUserRotation", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void SetUserRotation(double w, double x, double y, double z);
 
         [DllImportAttribute("InfinadeckAPI", EntryPoint = "StartTreadmillUserControl", CallingConvention = CallingConvention.Cdecl)]
         internal static extern void StartTreadmillUserControl();
@@ -144,7 +141,7 @@ namespace Infinadeck
 
         [DllImportAttribute("InfinadeckAPI", EntryPoint = "GetDiagnostics", CallingConvention = CallingConvention.Cdecl)]
         internal static extern DiagnosticInfo GetDiagnostics();
-
+         
         [DllImportAttribute("InfinadeckAPI", EntryPoint = "SetTreadmillPause", CallingConvention = CallingConvention.Cdecl)]
         internal static extern void SetTreadmillPause(bool pause);
 
@@ -165,6 +162,9 @@ namespace Infinadeck
 
         [DllImportAttribute("InfinadeckAPI", EntryPoint = "DeInitInternal", CallingConvention = CallingConvention.Cdecl)]
         internal static extern uint DeInitInternal(ref InfinadeckInitError inError);
+
+        [DllImportAttribute("InfinadeckAPI", EntryPoint = "GetLastInitErrorDescription", CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void GetLastInitErrorDescription(char[] buffer, int buffer_size = 128);
     }
 
 
@@ -238,26 +238,6 @@ namespace Infinadeck
             InfinadeckInterOp.SetManualSpeeds(x, y);
         }
 
-        /** SCHEDULED FOR DEPRECATION
-        * Assigns the user to a specific position.
-        */
-        public static void SetUserPosition(double x, double y)
-        {
-            InfinadeckInitError e = InfinadeckInitError.InfinadeckInitError_None;
-            if (!CheckConnection()) InitConnection(ref e);
-            InfinadeckInterOp.SetUserPosition(x, y);
-        }
-
-        /** SCHEDULED FOR DEPRECATION
-        * Assigns the user to a specific rotation.
-        */
-        public static void SetUserRotation(double w, double x, double y, double z)
-        {
-            InfinadeckInitError e = InfinadeckInitError.InfinadeckInitError_None;
-            if (!CheckConnection()) InitConnection(ref e);
-            InfinadeckInterOp.SetUserRotation(w, x, y, z);
-        }
-
         /**
         * Returns true if the treadmill is running, and false if the treadmill is 
         * stopped.
@@ -282,6 +262,7 @@ namespace Infinadeck
         /**
         * Check if the treadmill is in "Calibration" mode.
         *
+        * NOTE: Not currently implemented
         */
         public static bool GetCalibrating()
         {
@@ -302,6 +283,8 @@ namespace Infinadeck
         /**
         * Fills a TreadmillInfo struct with information about currently connected
         * treadmill.
+        *
+        * NOTE: Not currently implemented
         */
         public static TreadmillInfo GetTreadmillInfo()
         {
@@ -339,11 +322,11 @@ namespace Infinadeck
         * Enables or disables the virtual ring in the user's virtual display.
         * 
         */
-        public static void SetVirtualRing(bool enabled)
+        public static void SetVirtualRing(bool pause)
         {
             InfinadeckInitError e = InfinadeckInitError.InfinadeckInitError_None;
             if (!CheckConnection()) InitConnection(ref e);
-            InfinadeckInterOp.SetVirtualRing(enabled);
+            InfinadeckInterOp.SetVirtualRing(pause);
         }
 
         /**
@@ -368,6 +351,7 @@ namespace Infinadeck
             return InfinadeckInterOp.GetReferenceDeviceAngleDifference();
         }
 
+        //Deprecated Functions
         /**
         * Start or Stop the treadmill.
         * 
@@ -428,6 +412,15 @@ namespace Infinadeck
         public static DiagnosticInfo GetDiagnostics()
         {
             return InfinadeckInterOp.GetDiagnostics();
+        }
+
+        public static String GetLastInitErrorDescription()
+        {
+            InfinadeckInitError e = InfinadeckInitError.InfinadeckInitError_None;
+            if (!CheckConnection()) InitConnection(ref e);
+            char[] buffer = new char[128];
+            InfinadeckInterOp.GetLastInitErrorDescription(buffer, 128);
+            return new string(buffer);
         }
     }
 }
