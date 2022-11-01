@@ -31,6 +31,9 @@ public class InfinadeckMasterEditor : Editor
     SerializedProperty correctScale;
     SerializedProperty showCollisions;
     SerializedProperty showTreadmillVelocity;
+    SerializedProperty keybinds;
+    SerializedProperty myKeys;
+    SerializedProperty keybindNames;
 
     void OnEnable()
     {
@@ -48,6 +51,9 @@ public class InfinadeckMasterEditor : Editor
         correctScale = serializedObject.FindProperty("correctScale");
         showCollisions = serializedObject.FindProperty("showCollisions");
         showTreadmillVelocity = serializedObject.FindProperty("showTreadmillVelocity");
+        keybinds = serializedObject.FindProperty("keybinds");
+        myKeys = serializedObject.FindProperty("myKeys");
+        keybindNames = serializedObject.FindProperty("keybindNames");
     }
 
     public override void OnInspectorGUI()
@@ -65,11 +71,13 @@ public class InfinadeckMasterEditor : Editor
         if (cameraRig.objectReferenceValue && headset.objectReferenceValue)
         {
             EditorGUILayout.Space();
+
             EditorGUILayout.LabelField("Optional Settings");
             EditorGUILayout.PropertyField(autoStart);
             EditorGUILayout.PropertyField(firstLevel);
             EditorGUILayout.PropertyField(movementLevel);
             EditorGUILayout.PropertyField(guaranteeDestroyOnLoad);
+
             EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Advanced Settings");
@@ -80,6 +88,19 @@ public class InfinadeckMasterEditor : Editor
             EditorGUILayout.PropertyField(correctScale);
             EditorGUILayout.PropertyField(showCollisions);
             EditorGUILayout.PropertyField(showTreadmillVelocity);
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField("Keybind Settings");
+            EditorGUILayout.PropertyField(keybinds);
+            for (int b = 0; b < myKeys.arraySize; b++)
+            {
+                if (keybindNames.GetArrayElementAtIndex(b).stringValue != "")
+                {
+                    KeyCode key = (KeyCode)myKeys.GetArrayElementAtIndex(b).intValue;
+                    EditorGUILayout.LabelField(key.ToString() + " to " + keybindNames.GetArrayElementAtIndex(b).stringValue);
+                }
+            }
         }
             
         serializedObject.ApplyModifiedProperties();

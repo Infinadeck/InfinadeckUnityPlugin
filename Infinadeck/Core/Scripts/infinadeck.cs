@@ -86,7 +86,10 @@ namespace Infinadeck
     [StructLayout(LayoutKind.Sequential)]
     public struct DiagnosticInfo
     {
-        SpeedVector2 v;
+        SpeedVector2 service_distance;
+        SpeedVector2 total_distance;
+        double service_hours;
+        double total_hours;
 
     }
     public class InfinadeckInterOp
@@ -105,12 +108,6 @@ namespace Infinadeck
 
         [DllImportAttribute("InfinadeckAPI", EntryPoint = "SetManualSpeeds", CallingConvention = CallingConvention.Cdecl)]
         internal static extern void SetManualSpeeds(double x, double y);
-
-        [DllImportAttribute("InfinadeckAPI", EntryPoint = "SetUserPosition", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void SetUserPosition(double x, double y);
-
-        [DllImportAttribute("InfinadeckAPI", EntryPoint = "SetUserRotation", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void SetUserRotation(double w, double x, double y, double z);
 
         [DllImportAttribute("InfinadeckAPI", EntryPoint = "StartTreadmillUserControl", CallingConvention = CallingConvention.Cdecl)]
         internal static extern void StartTreadmillUserControl();
@@ -239,26 +236,6 @@ namespace Infinadeck
             InfinadeckInitError e = InfinadeckInitError.InfinadeckInitError_None;
             if (!CheckConnection()) InitConnection(ref e);
             InfinadeckInterOp.SetManualSpeeds(x, y);
-        }
-
-        /** SCHEDULED FOR DEPRECATION
-        * Assigns the user to a specific position.
-        */
-        public static void SetUserPosition(double x, double y)
-        {
-            InfinadeckInitError e = InfinadeckInitError.InfinadeckInitError_None;
-            if (!CheckConnection()) InitConnection(ref e);
-            InfinadeckInterOp.SetUserPosition(x, y);
-        }
-
-        /** SCHEDULED FOR DEPRECATION
-        * Assigns the user to a specific rotation.
-        */
-        public static void SetUserRotation(double w, double x, double y, double z)
-        {
-            InfinadeckInitError e = InfinadeckInitError.InfinadeckInitError_None;
-            if (!CheckConnection()) InitConnection(ref e);
-            InfinadeckInterOp.SetUserRotation(w, x, y, z);
         }
 
         /**

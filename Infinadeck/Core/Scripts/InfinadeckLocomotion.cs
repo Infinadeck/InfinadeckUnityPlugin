@@ -30,6 +30,9 @@ public class InfinadeckLocomotion : MonoBehaviour
     private Vector3 previousFramePosition = Vector3.zero;
     public bool showTreadmillVelocity = false;
 
+    public bool testShake = false;
+    public float testShakeStrength = .005f;
+
     void Start()
     {
         targetPosition = cameraRig.transform.position;
@@ -63,6 +66,8 @@ public class InfinadeckLocomotion : MonoBehaviour
             yDistance = (-calcX * Mathf.Sin(fixAngle) + calcY * Mathf.Cos(fixAngle)) * worldScale.z * speedGain;
 
             targetPosition = cameraRig.transform.position + new Vector3(xDistance, 0, yDistance);
+
+            if (testShake) { targetPosition += new Vector3(Random.Range(-testShakeStrength, testShakeStrength), 0, Random.Range(-testShakeStrength, testShakeStrength)); }
 
             // Move user based on treadmill motion as long as the deck is not calibrating
             cameraRig.transform.position = targetPosition;
