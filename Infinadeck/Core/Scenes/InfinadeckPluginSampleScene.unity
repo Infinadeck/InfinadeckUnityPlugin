@@ -124,6 +124,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: '[Infinadeck]'
       objectReference: {fileID: 0}
+    - target: {fileID: 5868361897497031310, guid: c975860e50254f046b6e14ba515b8218,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5868361897497031344, guid: c975860e50254f046b6e14ba515b8218,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -189,6 +194,11 @@ PrefabInstance:
       propertyPath: headset
       value: 
       objectReference: {fileID: 1660709400}
+    - target: {fileID: 1815068280796645685, guid: c975860e50254f046b6e14ba515b8218,
+        type: 3}
+      propertyPath: pluginVersion
+      value: 3.3.0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c975860e50254f046b6e14ba515b8218, type: 3}
 --- !u!1 &1190582928

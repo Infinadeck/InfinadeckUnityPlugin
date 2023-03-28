@@ -33,8 +33,8 @@ public class InfinadeckDeckHeading : MonoBehaviour
     {
         if (!motion && !CheckForLocomotionInScene())                  // will not handle world scale or rotation 
         {                                                             // in this instance, developers using this 
-            xin = (float)Infinadeck.Infinadeck.GetFloorSpeeds().v0;   // feature in this context should be 
-            yin = (float)Infinadeck.Infinadeck.GetFloorSpeeds().v1;   // able to fix the problem
+            xin = (float)motion.iI.InfIntGetFloorSpeeds.v0;   // feature in this context should be 
+            yin = (float)motion.iI.InfIntGetFloorSpeeds.v1;   // able to fix the problem
         }
         else
         {

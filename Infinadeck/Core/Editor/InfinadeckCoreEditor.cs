@@ -31,9 +31,7 @@ public class InfinadeckMasterEditor : Editor
     SerializedProperty correctScale;
     SerializedProperty showCollisions;
     SerializedProperty showTreadmillVelocity;
-    SerializedProperty keybinds;
-    SerializedProperty myKeys;
-    SerializedProperty keybindNames;
+    SerializedProperty guiOutput;
 
     void OnEnable()
     {
@@ -51,9 +49,7 @@ public class InfinadeckMasterEditor : Editor
         correctScale = serializedObject.FindProperty("correctScale");
         showCollisions = serializedObject.FindProperty("showCollisions");
         showTreadmillVelocity = serializedObject.FindProperty("showTreadmillVelocity");
-        keybinds = serializedObject.FindProperty("keybinds");
-        myKeys = serializedObject.FindProperty("myKeys");
-        keybindNames = serializedObject.FindProperty("keybindNames");
+        guiOutput = serializedObject.FindProperty("guiOutput");
     }
 
     public override void OnInspectorGUI()
@@ -91,18 +87,10 @@ public class InfinadeckMasterEditor : Editor
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Keybind Settings");
-            EditorGUILayout.PropertyField(keybinds);
-            for (int b = 0; b < myKeys.arraySize; b++)
-            {
-                if (keybindNames.GetArrayElementAtIndex(b).stringValue != "")
-                {
-                    KeyCode key = (KeyCode)myKeys.GetArrayElementAtIndex(b).intValue;
-                    EditorGUILayout.LabelField(key.ToString() + " to " + keybindNames.GetArrayElementAtIndex(b).stringValue);
-                }
-            }
+            EditorGUILayout.LabelField("Keybinds");
+            EditorGUILayout.TextArea(guiOutput.stringValue);
         }
-            
+
         serializedObject.ApplyModifiedProperties();
     }
 }

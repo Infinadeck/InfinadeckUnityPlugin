@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Infinadeck;
 
 /**
  * ------------------------------------------------------------
@@ -29,37 +28,32 @@ public class InfinadeckLocomotion : MonoBehaviour
     private Vector3 targetPosition = Vector3.zero;
     private Vector3 previousFramePosition = Vector3.zero;
     public bool showTreadmillVelocity = false;
+    public InfinadeckInterpreter iI;
 
     public bool testShake = false;
     public float testShakeStrength = .005f;
-
-    void Start()
-    {
-        targetPosition = cameraRig.transform.position;
-        previousFramePosition = cameraRig.transform.position;
-    }
 
     /**
      * Runs once per frame update.
      */
     void Update()
     {
-        if (Infinadeck.Infinadeck.CheckConnection()) // only run if there is a successful connection
+        if (iI.Connected) // only run if there is a successful connection
         {
+            if (!cameraRig) { return; }
+
             if (Vector3.Distance(cameraRig.transform.position, previousFramePosition) > 0.001f)
             {
                 if (showCollisions) { Debug.Log("Infinadeck Pre - Locomotion Check: User moved since last frame.Collision has occurred."); }
             }
 
             // Import speeds from Infinadeck
-            SpeedVector2 speeds = Infinadeck.Infinadeck.GetFloorSpeeds();
 
-            if (showTreadmillVelocity) { Debug.Log(speeds.v0 + " " + speeds.v1); }
+            if (showTreadmillVelocity) { Debug.Log(iI.InfIntGetFloorSpeeds.v0 + " " + iI.InfIntGetFloorSpeeds.v1); }
 
             // Distance = speed * time between samples
-            //Debug.Log(speeds.v0 + "    " + speeds.v1);
-            calcX = (float)speeds.v0 * (Time.deltaTime);
-            calcY = (float)speeds.v1 * (Time.deltaTime);
+            calcX = (float)iI.InfIntGetFloorSpeeds.v0 * (Time.deltaTime);
+            calcY = (float)iI.InfIntGetFloorSpeeds.v1 * (Time.deltaTime);
             // Convert for any weird world rotation or scale
             fixAngle = this.transform.eulerAngles.y* Mathf.Deg2Rad;
             xDistance =  (calcX * Mathf.Cos(fixAngle) + calcY * Mathf.Sin(fixAngle)) * worldScale.x * speedGain;
@@ -79,7 +73,7 @@ public class InfinadeckLocomotion : MonoBehaviour
 
             previousFramePosition = cameraRig.transform.position;
 
-            if (infinadeckReferenceObj) { infinadeckReferenceObj.currentTreadmillSpeed = Vector3.Magnitude(new Vector3((float)speeds.v0, (float)speeds.v1, 0)); }
+            if (infinadeckReferenceObj) { infinadeckReferenceObj.currentTreadmillSpeed = Vector3.Magnitude(new Vector3((float)iI.InfIntGetFloorSpeeds.v0, (float)iI.InfIntGetFloorSpeeds.v1, 0)); }
         }
     }
 }

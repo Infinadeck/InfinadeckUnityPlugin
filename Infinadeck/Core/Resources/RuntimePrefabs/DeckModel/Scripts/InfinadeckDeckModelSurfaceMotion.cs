@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Infinadeck;
 
 /**
  * ------------------------------------------------------------
@@ -26,6 +25,7 @@ public class InfinadeckDeckModelSurfaceMotion : MonoBehaviour
 
     [InfReadOnlyInEditor] public float xDistance;
     [InfReadOnlyInEditor] public float yDistance;
+    public InfinadeckInterpreter iI;
 
     InfinadeckLocomotion CheckForLocomotionInScene()
     {
@@ -62,8 +62,8 @@ public class InfinadeckDeckModelSurfaceMotion : MonoBehaviour
             }
             else if (!motion && !CheckForLocomotionInScene()) // will not handle world scale or rotation in this instance, developers 
             {                                                 // using this feature in this context should be able to fix the problem
-                xDistance += (float)Infinadeck.Infinadeck.GetFloorSpeeds().v0 * (Time.deltaTime) * 1;
-                yDistance += (float)Infinadeck.Infinadeck.GetFloorSpeeds().v1 * (Time.deltaTime) * 1;
+                xDistance += (float)iI.InfIntGetFloorSpeeds.v0 * (Time.deltaTime) * 1;
+                yDistance += (float)iI.InfIntGetFloorSpeeds.v1 * (Time.deltaTime) * 1;
             }
             else
             {
