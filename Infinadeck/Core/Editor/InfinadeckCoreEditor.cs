@@ -50,6 +50,11 @@ public class InfinadeckMasterEditor : Editor
         showCollisions = serializedObject.FindProperty("showCollisions");
         showTreadmillVelocity = serializedObject.FindProperty("showTreadmillVelocity");
         guiOutput = serializedObject.FindProperty("guiOutput");
+        if (PlayerSettings.legacyClampBlendShapeWeights)
+        {
+            Debug.Log("INFINADECK NOTICE: Blendshapes with non 0-100 values are used for our reference objects. Player Settings -> Legacy Clamp Blend Shape Weights has been disabled.");
+            PlayerSettings.legacyClampBlendShapeWeights = false;
+        }
     }
 
     public override void OnInspectorGUI()
