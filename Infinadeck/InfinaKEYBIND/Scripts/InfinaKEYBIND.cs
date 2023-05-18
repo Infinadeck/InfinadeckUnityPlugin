@@ -125,7 +125,7 @@ public class InfinaKEYBIND : MonoBehaviour
     public KeyCode[] customKeys = new KeyCode[12];  
     readonly string defaultCustomKeystring = "Alpha1-Alpha2-Alpha3-Alpha4-Alpha5-Alpha6-Alpha7-Alpha8-Alpha9-Alpha0-Minus-Equals";
 
-    public KeyCode[] GetMyKeys(string keybindProfile, string customBinding)
+    public KeyCode[] GetMyKeys(string keybindProfile)
     {
         if (keybindProfile == funcGroup) { return funcKeys; }
         else if (keybindProfile == alphGroup) { return alphKeys; }
@@ -136,7 +136,7 @@ public class InfinaKEYBIND : MonoBehaviour
         else if (keybindProfile == asdfGroup) { return asdfKeys; }
         else // assume keybindProfile == "Custom"
         {
-            string[] keyArray = customBinding.Split((Char)"-"[0]);
+            string[] keyArray = keybindProfile.Split((Char)"-"[0]);
             if (keyArray.Length != 12)
             {
                 Debug.LogError("INFINAKEYBIND NOTIFICATION: customBinding not valid, using default (1234)");
@@ -158,6 +158,20 @@ public class InfinaKEYBIND : MonoBehaviour
             for (int b = 0; b < 12; b++)
             {
                 if (CheckKeyBuffer(theKeys[b])) { output = b + 1; RemoveKeyFromBuffer(theKeys[b]); }
+            }
+        }
+        if (CheckKeyBufferEmpty()) { checkYourKeys = false; }
+        return output;
+    }
+
+    public bool KeyRequest(KeyCode theKey)
+    {
+        bool output = false;
+        if (checkYourKeys)
+        {
+            for (int b = 0; b < 12; b++)
+            {
+                if (CheckKeyBuffer(theKey)) { output = true; RemoveKeyFromBuffer(theKey); }
             }
         }
         if (CheckKeyBufferEmpty()) { checkYourKeys = false; }

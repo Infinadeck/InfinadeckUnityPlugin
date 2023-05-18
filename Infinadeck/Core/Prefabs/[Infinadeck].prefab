@@ -44,22 +44,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c2b4ed562e1cbc48ac9bbea328b52ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pluginVersion: 3.2.0
+  pluginVersion: 3.3.0
   refObjects: {fileID: 0}
   locomotion: {fileID: 0}
   splashScreen: {fileID: 0}
+  demo: {fileID: 0}
+  iI: {fileID: 0}
   autoStart: 1
   firstLevel: 1
   movementLevel: 1
   guaranteeDestroyOnLoad: 0
-  correctPosition: 0
-  correctRotation: 0
-  correctScale: 0
+  showCollisions: 0
+  showTreadmillVelocity: 0
+  guiOutput: 
   preferences: {fileID: 0}
+  keybinds: {fileID: 0}
+  gamePreferences: {fileID: 0}
   cameraRig: {fileID: 0}
   headset: {fileID: 0}
   speedGain: 1
-  worldScale: {x: 1, y: 1, z: 1}
+  originOffsetPosition: {x: 0, y: 0, z: 0}
+  originOffsetRotation: {x: 0, y: 0, z: 0}
+  originOffsetScale: {x: 1, y: 1, z: 1}
 --- !u!1001 &4838356386765045977
 PrefabInstance:
   m_ObjectHideFlags: 0

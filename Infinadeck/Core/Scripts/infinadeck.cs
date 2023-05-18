@@ -29,6 +29,7 @@ namespace Infinadeck
         InfinadeckInitError_FailedHostResolution,
         InfinadeckInitError_FailedServerConnection,
         InfinadeckInitError_FailedServerSend,
+        InfinadeckInitError_RuntimeOutOfDate,
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -115,6 +116,9 @@ namespace Infinadeck
         [DllImportAttribute("InfinadeckAPI", EntryPoint = "CheckConnection", CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool CheckConnection();
 
+        [DllImportAttribute("InfinadeckAPI", EntryPoint = "IsRuntimeOpen", CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool IsRuntimeOpen();
+
         [DllImportAttribute("InfinadeckAPI", EntryPoint = "GetRing", CallingConvention = CallingConvention.Cdecl)]
         internal static extern Ring GetRing();
 
@@ -172,12 +176,20 @@ namespace Infinadeck
     class Infinadeck
     {
         /**
+        * Used to prevent calling CheckConnection when InitConnection returns an error.
+        * Once InitConnection returns no errors, CheckConnection should be safe to call.
+        */
+        private static bool preventEarlyFunctionCalls = false;
+
+        /**
         * Loads internal functionality. Should be called during application
         * initialization
         */
         public static void InitConnection(ref InfinadeckInitError inError)
         {
             InfinadeckInterOp.InitInternal(ref inError);
+            if (inError == InfinadeckInitError.InfinadeckInitError_None) { preventEarlyFunctionCalls = false; }
+            else { preventEarlyFunctionCalls = true; }
             return;
         }
 
@@ -195,7 +207,16 @@ namespace Infinadeck
         */
         public static bool CheckConnection()
         {
+            if (preventEarlyFunctionCalls) return false;
             return InfinadeckInterOp.CheckConnection();
+        }
+
+        /**
+        * Check if connected to an instance of the Runtime.
+        */
+        public static bool CheckRuntimeOpen()
+        {
+            return InfinadeckInterOp.IsRuntimeOpen();
         }
 
         /**

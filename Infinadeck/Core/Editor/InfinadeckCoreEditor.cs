@@ -21,39 +21,38 @@ public class InfinadeckMasterEditor : Editor
     SerializedProperty cameraRig;
     SerializedProperty headset;
     SerializedProperty autoStart;
+    SerializedProperty originOffsetPosition;
+    SerializedProperty originOffsetRotation;
+    SerializedProperty originOffsetScale;
     SerializedProperty firstLevel;
     SerializedProperty movementLevel;
     SerializedProperty guaranteeDestroyOnLoad;
     SerializedProperty speedGain;
-    SerializedProperty worldScale;
-    SerializedProperty correctPosition;
-    SerializedProperty correctRotation;
-    SerializedProperty correctScale;
     SerializedProperty showCollisions;
     SerializedProperty showTreadmillVelocity;
-    SerializedProperty keybinds;
-    SerializedProperty myKeys;
-    SerializedProperty keybindNames;
+    SerializedProperty guiOutput;
 
     void OnEnable()
     {
         pluginVersion = serializedObject.FindProperty("pluginVersion");
         cameraRig = serializedObject.FindProperty("cameraRig");
         headset = serializedObject.FindProperty("headset");
+        originOffsetPosition = serializedObject.FindProperty("originOffsetPosition");
+        originOffsetRotation = serializedObject.FindProperty("originOffsetRotation");
+        originOffsetScale = serializedObject.FindProperty("originOffsetScale");
         autoStart = serializedObject.FindProperty("autoStart");
         firstLevel = serializedObject.FindProperty("firstLevel");
         movementLevel = serializedObject.FindProperty("movementLevel");
         guaranteeDestroyOnLoad = serializedObject.FindProperty("guaranteeDestroyOnLoad");
         speedGain = serializedObject.FindProperty("speedGain");
-        worldScale = serializedObject.FindProperty("worldScale");
-        correctPosition = serializedObject.FindProperty("correctPosition");
-        correctRotation = serializedObject.FindProperty("correctRotation");
-        correctScale = serializedObject.FindProperty("correctScale");
         showCollisions = serializedObject.FindProperty("showCollisions");
         showTreadmillVelocity = serializedObject.FindProperty("showTreadmillVelocity");
-        keybinds = serializedObject.FindProperty("keybinds");
-        myKeys = serializedObject.FindProperty("myKeys");
-        keybindNames = serializedObject.FindProperty("keybindNames");
+        guiOutput = serializedObject.FindProperty("guiOutput");
+        if (PlayerSettings.legacyClampBlendShapeWeights)
+        {
+            Debug.Log("INFINADECK NOTICE: Blendshapes with non 0-100 values are used for our reference objects. Player Settings -> Legacy Clamp Blend Shape Weights has been disabled.");
+            PlayerSettings.legacyClampBlendShapeWeights = false;
+        }
     }
 
     public override void OnInspectorGUI()
@@ -68,6 +67,9 @@ public class InfinadeckMasterEditor : Editor
         }
         EditorGUILayout.PropertyField(cameraRig);
         EditorGUILayout.PropertyField(headset);
+        EditorGUILayout.PropertyField(originOffsetPosition);
+        EditorGUILayout.PropertyField(originOffsetRotation);
+        EditorGUILayout.PropertyField(originOffsetScale);
         if (cameraRig.objectReferenceValue && headset.objectReferenceValue)
         {
             EditorGUILayout.Space();
@@ -82,27 +84,15 @@ public class InfinadeckMasterEditor : Editor
 
             EditorGUILayout.LabelField("Advanced Settings");
             EditorGUILayout.PropertyField(speedGain);
-            EditorGUILayout.PropertyField(worldScale);
-            EditorGUILayout.PropertyField(correctPosition);
-            EditorGUILayout.PropertyField(correctRotation);
-            EditorGUILayout.PropertyField(correctScale);
             EditorGUILayout.PropertyField(showCollisions);
             EditorGUILayout.PropertyField(showTreadmillVelocity);
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Keybind Settings");
-            EditorGUILayout.PropertyField(keybinds);
-            for (int b = 0; b < myKeys.arraySize; b++)
-            {
-                if (keybindNames.GetArrayElementAtIndex(b).stringValue != "")
-                {
-                    KeyCode key = (KeyCode)myKeys.GetArrayElementAtIndex(b).intValue;
-                    EditorGUILayout.LabelField(key.ToString() + " to " + keybindNames.GetArrayElementAtIndex(b).stringValue);
-                }
-            }
+            EditorGUILayout.LabelField("Keybinds");
+            EditorGUILayout.TextArea(guiOutput.stringValue);
         }
-            
+
         serializedObject.ApplyModifiedProperties();
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Infinadeck;
 
 /**
  * ------------------------------------------------------------
@@ -20,10 +19,9 @@ public class InfinadeckReferenceObjects : MonoBehaviour
 	public GameObject referenceCenter;
     public GameObject referencePanel;
     public GameObject heading;
-    public InfinaDATA preferences;
     public Material syncMaterial;
     public GameObject deckModel;
-    public Vector3 worldScale = Vector3.one;
+    public GameObject referenceRig;
     public float currentTreadmillSpeed;
     public SkinnedMeshRenderer referencePanelSymbols;
     public SkinnedMeshRenderer referencePanelBand;
@@ -40,73 +38,48 @@ public class InfinadeckReferenceObjects : MonoBehaviour
     public Texture symbolGo;
     public Gradient grad;
     private int frameCount = 0;
-    public Dictionary<string, InfinaDATA.DataEntry> defaultPreferences;
-
+    public InfinaDATA preferences;
+    public InfinaDATA gamePreferences;
+    private bool geoUpdating;
+    private bool modelUpdating;
+    public InfinadeckInterpreter iI;
     /**
      * Runs once on the object's first frame.
      */
-    void Start() {
-        preferences = this.gameObject.AddComponent<InfinaDATA>();
-        preferences.fileLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/My Games/Infinadeck/ReferenceObjects/";
-        preferences.fileName = "infPlugin_refObj_preferences.ini";
-        defaultPreferences = new Dictionary<string, InfinaDATA.DataEntry>
-        {
-            // Reference Object Settings:
-            { "ringVisibility", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "true" } },
-            { "ringModel", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "1" } },
-            { "enableFixedRingHeights", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "false" } },
-            { "baseFixedRingHeight", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "31.5" } },
-            { "modulusOfFixedRingHeight", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "3" } },
-            { "indexOfFixedRingHeight", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "0" } },
-            
-            { "centerVisibility", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "true" } },
-            { "centerModel", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "0" } },
-            { "forceCenter", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "true" } },
-            { "centerX", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "0.0000" } },
-            { "centerY", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "0.0000" } },
-            { "centerZ", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "1.0000" } },
-
-            { "edgeVisibility", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "true" } },
-            { "deckVisibility", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "false" } },
-            { "deckHeadingVisibility", new InfinaDATA.DataEntry { EntryName = "ReferenceObjects", EntryValue = "false" } },
-            
-            
-            
-            //Treadmill Configuration:
-            { "ringDiameter", new InfinaDATA.DataEntry { EntryName = "TreadmillConfiguration", EntryValue = "1.2954" } },
-            { "ringThickness", new InfinaDATA.DataEntry { EntryName = "TreadmillConfiguration", EntryValue = ".0381" } },
-
-            { "walkingSurfaceWidth", new InfinaDATA.DataEntry { EntryName = "TreadmillConfiguration", EntryValue = "1.2192" } },
-            { "walkingSurfaceEdgeThickness", new InfinaDATA.DataEntry { EntryName = "TreadmillConfiguration", EntryValue = ".03" } },
-
-
-
-            //Dynamic Panel:
-            // Options for panelPalette:
-            // [0] black-BG grey-boundary white-band
-            // [1] grey-BG white-boundary synced-band
-            // [2] synced-BG white-boundary white-band
-            // [3] no-BG white-boundary synced-band
-            // [4] no-BG white-boundary white-band
-            { "dynamicRingPanel", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "false" } },
-            { "panelWidthM", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "0.15" } },
-            { "panelHeightM", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "0.05" } },
-            { "panelDiameterM", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "1.3" } },
-            { "bandThicknessPercent", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "6" } },
-            { "topBoundaryThicknessPercent", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "3" } },
-            { "bottomBoundaryThicknessPercent", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "4" } },
-            { "dynamicBackdrop", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "false" } },
-            { "panelPalette", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "0" } }, 
-            { "colorblindMode", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "false" } },
-            { "dynamicColorblindElements", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "false" } },
-            { "dynamicColorblindFrames", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "1000" } },
-            { "maxTreadmillSpeedMetersPerSecond", new InfinaDATA.DataEntry { EntryName = "DynamicPanel", EntryValue = "0" } }
-        };
-        preferences.all = defaultPreferences;
-        preferences.InitMe();
-        this.transform.localScale = worldScale;
-        StartCoroutine(UpdateObjectGeometry());
+    void OnEnable()
+    {
         StartCoroutine(UpdateObjectModels());
+    }
+
+    private void Start()
+    {
+        if (!referenceRig)
+        {
+            Debug.LogWarning("INFINADECK WARNING: No RefObj ReferenceRig Assigned, Assuming Parent");
+            if (this.transform.parent == null)
+            {
+                Debug.LogWarning("INFINADECK WARNING: No RefObj Parent, Assuming Self");
+                referenceRig = this.gameObject;
+            }
+            else { referenceRig = this.transform.parent.gameObject; }
+        }
+        this.transform.localPosition = Vector3.zero;
+        this.transform.localRotation = Quaternion.identity;
+        this.transform.localScale = Vector3.one;
+    }
+
+    void OnDisable()
+    {
+        if (geoUpdating)
+        {
+            StopCoroutine(UpdateObjectGeometry());
+            geoUpdating = false;
+        }
+        if (modelUpdating)
+        {
+            StopCoroutine(UpdateObjectModels());
+            modelUpdating = false;
+        }
     }
 
     /**
@@ -116,7 +89,7 @@ public class InfinadeckReferenceObjects : MonoBehaviour
     {
         frameCount++;
         if (frameCount >= preferences.ReadInt("dynamicColorblindFrames")) { frameCount = 0; }
-        if (Infinadeck.Infinadeck.GetTreadmillRunState())
+        if (iI.InfIntGetTreadmillRunState)
         {
             SyncColor(Color.green);
             if (preferences.ReadBool("colorblindMode"))
@@ -191,8 +164,15 @@ public class InfinadeckReferenceObjects : MonoBehaviour
      */
     IEnumerator UpdateObjectModels()
     {
+        modelUpdating = true;
         while (true)
         {
+            if (!preferences) yield return new WaitForSeconds(0.05f);
+            if (!geoUpdating)
+            {
+                StartCoroutine(UpdateObjectGeometry());
+                yield return new WaitForSeconds(0.05f);
+            }
             deckModel.SetActive(preferences.ReadBool("deckVisibility"));
             heading.SetActive(preferences.ReadBool("deckHeadingVisibility"));
             referenceRing.SetActive(preferences.ReadBool("ringVisibility"));
@@ -223,103 +203,98 @@ public class InfinadeckReferenceObjects : MonoBehaviour
      * Updates the geometry and colors of the Reference Objects in-game from the settings file.
      */
     IEnumerator UpdateObjectGeometry() {
+        geoUpdating = true;
         while (true) {
+            if (!preferences) yield return new WaitForSeconds(0.05f);
             Vector3 ringposition = Vector3.zero;
-            if (preferences.ReadBool("forceCenter"))
+            if (preferences.ReadBool("overrideTreadmillPosition"))
             {
-                this.transform.localPosition = new Vector3(preferences.ReadFloat("centerX"), 0, preferences.ReadFloat("centerY")); // 0 out vertical axis
-                referenceRing.transform.localPosition = new Vector3(0, preferences.ReadFloat("centerZ"), 0); // use ONLY vertical axis
-                referencePanel.transform.localPosition = new Vector3(0, preferences.ReadFloat("centerZ"), 0); // use ONLY vertical axis
+                this.transform.localPosition = new Vector3(preferences.ReadFloat("overrideX"), 0, preferences.ReadFloat("overrideY")); // 0 out vertical axis
+                referenceRing.transform.localPosition = new Vector3(0, preferences.ReadFloat("overrideZ"), 0); // use ONLY vertical axis
+                referencePanel.transform.localPosition = new Vector3(0, preferences.ReadFloat("overrideZ"), 0); // use ONLY vertical axis
             }
             else
             {
-                Ring infRing = Infinadeck.Infinadeck.GetRingValues();
-                ringposition = new Vector3((float)infRing.x, (float)infRing.z, (float)infRing.y);
+                ringposition = new Vector3((float)iI.InfIntGetRingValues.x, (float)iI.InfIntGetRingValues.z, (float)iI.InfIntGetRingValues.y);
                 this.transform.localPosition = new Vector3(ringposition.x, 0, ringposition.z); // 0 out vertical axis
                 referenceRing.transform.localPosition = new Vector3(0, ringposition.y, 0); // use ONLY vertical axis
                 referencePanel.transform.localPosition = new Vector3(0, ringposition.y, 0); // use ONLY vertical axis
                 PushCenterPreferencesToINI();
             }
+            //offset based on specific game needs (typically only for debug, not intended for shipping)
+            this.transform.localPosition += new Vector3
+                    (
+                    gamePreferences.ReadFloat("gameOverrideX"),
+                    gamePreferences.ReadFloat("gameOverrideY"),
+                    gamePreferences.ReadFloat("gameOverrideZ")
+                    );
 
-            if (preferences.ReadBool("enableFixedRingHeights"))
+            foreach (SkinnedMeshRenderer r in rendRing)
             {
-                float height = preferences.ReadFloat("baseFixedRingHeight") + preferences.ReadFloat("modulusOfFixedRingHeight") * preferences.ReadInt("indexOfFixedRingHeight");
-                Debug.Log(height);
-                referenceRing.transform.localPosition = new Vector3(0, height * .0254f, 0);
-                referencePanel.transform.localPosition = new Vector3(0, height * .0254f, 0);
+                // Thickness, .02m at 0, .04m at 100, equation:   diam = .02m + percent*.02m/100   (diam - .02m)*5000 = percent
+                r.SetBlendShapeWeight(0, 5000 * (preferences.ReadFloat("ringThickness") - 0.02f));
+                // Diameter, 2m at 0, 4m at 100, equation:   diam = 2m + percent*2m/100   (diam - 2m)*50 = percent 
+                r.SetBlendShapeWeight(1, 50 * (preferences.ReadFloat("ringDiameter") - 2));
             }
 
-            if (preferences.ReadBool("ringVisibility"))
+
+
+            //OuterEdge, 4m at 0, 6m at 100, equation:   boxsize = 4m + percent*2m/100   (boxsize - 4m)*50 = percent         
+            rendEdge.SetBlendShapeWeight(0, 50 * (preferences.ReadFloat("walkingSurfaceWidth") - 4));
+            //InnerEdge, 1m at 0, 0m at 100, equation:   edgethk = 1m - percent*1m/100   (edgethk - 1m)*-100 = percent  
+            rendEdge.SetBlendShapeWeight(1, -100 * (preferences.ReadFloat("walkingSurfaceEdgeThickness") - 1));
+            heading.GetComponent<InfinadeckDeckHeading>().boxsize = preferences.ReadFloat("walkingSurfaceWidth") / 2;
+
+
+
+            float widthRatio = preferences.ReadFloat("panelWidthM");
+            float heightRatio = preferences.ReadFloat("panelHeightM");
+            float diamMult = (preferences.ReadFloat("panelDiameterM") * 50 / widthRatio) - 100;
+            referencePanel.transform.localScale = new Vector3(widthRatio, heightRatio, widthRatio);
+            referencePanelBand.SetBlendShapeWeight(2, diamMult);
+            referencePanelTopBoundary.SetBlendShapeWeight(2, diamMult);
+            referencePanelBottomBoundary.SetBlendShapeWeight(2, diamMult);
+            referencePanelBackdrop.SetBlendShapeWeight(2, diamMult);
+            referencePanelBand.SetBlendShapeWeight(2, diamMult);
+            referencePanelSymbols.SetBlendShapeWeight(2, diamMult);
+            referencePanelTopBoundary.SetBlendShapeWeight(1, 100 - preferences.ReadFloat("topBoundaryThicknessPercent")); // Bottom
+            referencePanelBottomBoundary.SetBlendShapeWeight(0, 100 - preferences.ReadFloat("bottomBoundaryThicknessPercent")); // Top
+
+            if ((preferences.ReadFloat("bandThicknessPercent") != 0) && (preferences.ReadFloat("maxTreadmillSpeedMetersPerSecond") != 0)) { referencePanelBand.gameObject.SetActive(true); }
+            else { referencePanelBand.gameObject.SetActive(false); }
+
+            if (preferences.ReadInt("panelPalette") == 0) // [0] black-BG grey-boundary white-band
             {
-                foreach (SkinnedMeshRenderer r in rendRing)
-                {
-                    // Thickness, .02m at 0, .04m at 100, equation:   diam = .02m + percent*.02m/100   (diam - .02m)*5000 = percent
-                    r.SetBlendShapeWeight(0, 5000 * (preferences.ReadFloat("ringThickness") - 0.02f));
-                    // Diameter, 2m at 0, 4m at 100, equation:   diam = 2m + percent*2m/100   (diam - 2m)*50 = percent 
-                    r.SetBlendShapeWeight(1, 50 * (preferences.ReadFloat("ringDiameter") - 2)); 
-                }
+                referencePanelBackdrop.gameObject.SetActive(true);
+                referencePanelBackdropMat.SetColor("_Color2", Color.black);
+                referencePanelBoundaryMat.SetColor("_Color2", Color.grey);
+                referencePanelBandMat.SetColor("_Color2", Color.white);
+            }
+            else if (preferences.ReadInt("panelPalette") == 1) // [1] grey-BG white-boundary synced-band
+            {
+                referencePanelBackdrop.gameObject.SetActive(true);
+                referencePanelBackdropMat.SetColor("_Color2", Color.grey);
+                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
+            }
+            else if (preferences.ReadInt("panelPalette") == 2) // [2] synced-BG white-boundary white-band
+            {
+                referencePanelBackdrop.gameObject.SetActive(true);
+                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
+                referencePanelBandMat.SetColor("_Color2", Color.white);
+
+            }
+            else if (preferences.ReadInt("panelPalette") == 3) // [3] no-BG white-boundary synced-band
+            {
+                referencePanelBackdrop.gameObject.SetActive(false);
+                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
+            }
+            else if (preferences.ReadInt("panelPalette") == 4) // [4] no-BG white-boundary white-band
+            {
+                referencePanelBackdrop.gameObject.SetActive(false);
+                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
+                referencePanelBandMat.SetColor("_Color2", Color.white);
             }
 
-            if (preferences.ReadBool("edgeVisibility"))
-            {
-                //OuterEdge, 4m at 0, 6m at 100, equation:   boxsize = 4m + percent*2m/100   (boxsize - 4m)*50 = percent         
-                rendEdge.SetBlendShapeWeight(0, 50 * (preferences.ReadFloat("walkingSurfaceWidth") - 4));
-                //InnerEdge, 1m at 0, 0m at 100, equation:   edgethk = 1m - percent*1m/100   (edgethk - 1m)*-100 = percent  
-                rendEdge.SetBlendShapeWeight(1, -100 * (preferences.ReadFloat("walkingSurfaceEdgeThickness") - 1)); 
-                heading.GetComponent<InfinadeckDeckHeading>().boxsize = preferences.ReadFloat("walkingSurfaceWidth") / 2;
-            }
-
-            if (preferences.ReadBool("dynamicRingPanel"))
-            {
-                float widthRatio = preferences.ReadFloat("panelWidthM");
-                float heightRatio = preferences.ReadFloat("panelHeightM");
-                float diamMult = (preferences.ReadFloat("panelDiameterM") * 50 / widthRatio) - 100;
-                referencePanel.transform.localScale = new Vector3(widthRatio, heightRatio, widthRatio);
-                referencePanelBand.SetBlendShapeWeight(2, diamMult);
-                referencePanelTopBoundary.SetBlendShapeWeight(2, diamMult);
-                referencePanelBottomBoundary.SetBlendShapeWeight(2, diamMult);
-                referencePanelBackdrop.SetBlendShapeWeight(2, diamMult);
-                referencePanelBand.SetBlendShapeWeight(2, diamMult);
-                referencePanelSymbols.SetBlendShapeWeight(2, diamMult);
-                referencePanelTopBoundary.SetBlendShapeWeight(1, 100 - preferences.ReadFloat("topBoundaryThicknessPercent")); // Bottom
-                referencePanelBottomBoundary.SetBlendShapeWeight(0, 100 - preferences.ReadFloat("bottomBoundaryThicknessPercent")); // Top
-
-
-                if ((preferences.ReadFloat("bandThicknessPercent") != 0) && (preferences.ReadFloat("maxTreadmillSpeedMetersPerSecond") != 0)) { referencePanelBand.gameObject.SetActive(true); }
-                else { referencePanelBand.gameObject.SetActive(false); }
-
-                if (preferences.ReadInt("panelPalette") == 0) // [0] black-BG grey-boundary white-band
-                {
-                    referencePanelBackdrop.gameObject.SetActive(true);
-                    referencePanelBackdropMat.SetColor("_Color2", Color.black);
-                    referencePanelBoundaryMat.SetColor("_Color2", Color.grey);
-                    referencePanelBandMat.SetColor("_Color2", Color.white);
-                }
-                else if (preferences.ReadInt("panelPalette") == 1) // [1] grey-BG white-boundary synced-band
-                {
-                    referencePanelBackdrop.gameObject.SetActive(true);
-                    referencePanelBackdropMat.SetColor("_Color2", Color.grey);
-                    referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-                }
-                else if (preferences.ReadInt("panelPalette") == 2) // [2] synced-BG white-boundary white-band
-                {
-                    referencePanelBackdrop.gameObject.SetActive(true);
-                    referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-                    referencePanelBandMat.SetColor("_Color2", Color.white);
-
-                }
-                else if (preferences.ReadInt("panelPalette") == 3) // [3] no-BG white-boundary synced-band
-                {
-                    referencePanelBackdrop.gameObject.SetActive(false);
-                    referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-                }
-                else if (preferences.ReadInt("panelPalette") == 4) // [4] no-BG white-boundary white-band
-                {
-                    referencePanelBackdrop.gameObject.SetActive(false);
-                    referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-                    referencePanelBandMat.SetColor("_Color2", Color.white);
-                }
-            }
             if (preferences.ReadBool("colorblindMode"))
             {
                 if (!preferences.ReadBool("dynamicRingPanel"))
@@ -490,37 +465,17 @@ public class InfinadeckReferenceObjects : MonoBehaviour
     }
 
     /**
-     * Imports the preferences from the settings file.
-     */
-    public void ImportPreferences()
-    {
-        preferences.LoadSettings();
-    }
-
-    /**
-     * Resets the settings file to the default preferences.
-     */
-    public void ResetPreferences()
-    {
-        preferences.all = defaultPreferences;
-        foreach (KeyValuePair<string, InfinaDATA.DataEntry> pref in preferences.all)
-        {
-            pref.Value.WriteFlag = true;
-        }
-    }
-
-    /**
      * Updates the deck center preference values from the in game values.
      */
     public void PushCenterPreferencesToINI()
     {
-        if ((preferences.ReadFloat("centerX") != this.transform.localPosition.x) ||
-            (preferences.ReadFloat("centerY") != this.transform.localPosition.z) ||
-            (preferences.ReadFloat("centerZ") != referenceRing.transform.localPosition.y))
+        if ((preferences.ReadFloat("overrideX") != this.transform.localPosition.x) ||
+            (preferences.ReadFloat("overrideY") != this.transform.localPosition.z) ||
+            (preferences.ReadFloat("overrideZ") != referenceRing.transform.localPosition.y))
         {
-            preferences.Write("centerX", this.transform.localPosition.x.ToString());
-            preferences.Write("centerY", this.transform.localPosition.z.ToString());
-            preferences.Write("centerZ", referenceRing.transform.localPosition.y.ToString());
+            preferences.Write("overrideX", this.transform.localPosition.x.ToString());
+            preferences.Write("overrideY", this.transform.localPosition.z.ToString());
+            preferences.Write("overrideZ", referenceRing.transform.localPosition.y.ToString());
         }
     }
 }
