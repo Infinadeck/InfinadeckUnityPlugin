@@ -13,6 +13,7 @@ using UnityEngine;
 
 public class InfinadeckLocomotion : MonoBehaviour
 {
+    public GameObject referenceRig;
     public GameObject cameraRig;
 
     [InfReadOnlyInEditor] public float xDistance;
@@ -21,7 +22,6 @@ public class InfinadeckLocomotion : MonoBehaviour
     private float fixAngle;
     private float calcX;
     private float calcY;
-    public Vector3 worldScale = Vector3.one;
     public float speedGain = 1;
     public InfinadeckReferenceObjects infinadeckReferenceObj;
     public bool showCollisions = false;
@@ -33,6 +33,28 @@ public class InfinadeckLocomotion : MonoBehaviour
     public bool testShake = false;
     public float testShakeStrength = .005f;
 
+    private void Start()
+    {
+        if (!referenceRig)
+        {
+            Debug.LogWarning("INFINADECK WARNING: No Locomotion ReferenceRig Assigned, Assuming Parent");
+            if (this.transform.parent == null)
+            {
+                Debug.LogWarning("INFINADECK WARNING: No Locomotion Parent, Assuming CameraRig");
+                if (cameraRig == null)
+                {
+                    Debug.LogWarning("INFINADECK WARNING: No Locomotion CameraRig, Assuming Self");
+                    referenceRig = this.gameObject;
+                }
+                else { referenceRig = cameraRig; }
+            }
+            else { referenceRig = this.transform.parent.gameObject; }
+        }
+        this.transform.localPosition = Vector3.zero;
+        this.transform.localRotation = Quaternion.identity;
+        this.transform.localScale = Vector3.one;
+    }
+
     /**
      * Runs once per frame update.
      */
@@ -40,6 +62,7 @@ public class InfinadeckLocomotion : MonoBehaviour
     {
         if (iI.Connected) // only run if there is a successful connection
         {
+            if (!referenceRig) { return; }
             if (!cameraRig) { return; }
 
             if (Vector3.Distance(cameraRig.transform.position, previousFramePosition) > 0.001f)
@@ -56,8 +79,8 @@ public class InfinadeckLocomotion : MonoBehaviour
             calcY = (float)iI.InfIntGetFloorSpeeds.v1 * (Time.deltaTime);
             // Convert for any weird world rotation or scale
             fixAngle = this.transform.eulerAngles.y* Mathf.Deg2Rad;
-            xDistance =  (calcX * Mathf.Cos(fixAngle) + calcY * Mathf.Sin(fixAngle)) * worldScale.x * speedGain;
-            yDistance = (-calcX * Mathf.Sin(fixAngle) + calcY * Mathf.Cos(fixAngle)) * worldScale.z * speedGain;
+            xDistance =  (calcX * Mathf.Cos(fixAngle) + calcY * Mathf.Sin(fixAngle)) * referenceRig.transform.lossyScale.x * speedGain;
+            yDistance = (-calcX * Mathf.Sin(fixAngle) + calcY * Mathf.Cos(fixAngle)) * referenceRig.transform.lossyScale.z * speedGain;
 
             targetPosition = cameraRig.transform.position + new Vector3(xDistance, 0, yDistance);
 

@@ -31,9 +31,6 @@ public class InfinadeckCore : MonoBehaviour
     public bool firstLevel = true;
     public bool movementLevel = true;
     public bool guaranteeDestroyOnLoad = false;
-    public bool correctPosition = false;
-    public bool correctRotation = false;
-    public bool correctScale = false;
     public bool showCollisions = false;
     public bool showTreadmillVelocity = false;
     private bool initialized = false;
@@ -54,7 +51,9 @@ public class InfinadeckCore : MonoBehaviour
     public GameObject cameraRig;
     public GameObject headset;
     public float speedGain = 1;
-    public Vector3 worldScale = Vector3.one;
+    public Vector3 originOffsetPosition;
+    public Vector3 originOffsetRotation = Vector3.zero;
+    public Vector3 originOffsetScale = Vector3.one;
 
     private Texture2D textBG;
 
@@ -259,9 +258,9 @@ public class InfinadeckCore : MonoBehaviour
         {
             this.transform.parent = cameraRig.transform;
         }
-        if (correctPosition) { this.transform.localPosition = Vector3.zero; }
-        if (correctRotation) { this.transform.localRotation = Quaternion.identity; }
-        if (correctScale) { this.transform.localScale = Vector3.one; }
+        this.transform.localPosition = originOffsetPosition;
+        this.transform.localRotation = Quaternion.Euler(originOffsetRotation);
+        this.transform.localScale = originOffsetScale;
 
         if (!headset)
         {
@@ -282,9 +281,10 @@ public class InfinadeckCore : MonoBehaviour
         {
             //Spawn Splashscreen
             splashScreen = Instantiate(Resources.Load("RuntimePrefabs/InfinadeckSplashscreen") as GameObject, transform.position, Quaternion.identity);
+            splashScreen.transform.parent = this.transform;
             infinadeckSplashScreen = splashScreen.GetComponent<InfinadeckSplashscreen>();
             infinadeckSplashScreen.headset = headset;
-            infinadeckSplashScreen.worldScale = worldScale;
+            infinadeckSplashScreen.referenceRig = this.gameObject;
             infinadeckSplashScreen.pluginVersion.text = "Plugin Version: " + pluginVersion;
             infinadeckSplashScreen.iI = iI;
         }
@@ -293,7 +293,7 @@ public class InfinadeckCore : MonoBehaviour
         refObjects = Instantiate(Resources.Load("RuntimePrefabs/InfinadeckReferenceObjects") as GameObject, transform.position, Quaternion.identity);
         refObjects.transform.parent = this.transform;
         infinadeckReferenceObjects = refObjects.GetComponent<InfinadeckReferenceObjects>();
-        infinadeckReferenceObjects.worldScale = worldScale;
+        infinadeckReferenceObjects.referenceRig = this.gameObject;
         infinadeckReferenceObjects.preferences = preferences;
         infinadeckReferenceObjects.gamePreferences = gamePreferences;
         infinadeckReferenceObjects.iI = iI;
@@ -305,7 +305,7 @@ public class InfinadeckCore : MonoBehaviour
             locomotion.transform.parent = this.transform;
             infinadeckLocomotion = locomotion.GetComponent<InfinadeckLocomotion>();
             infinadeckLocomotion.cameraRig = cameraRig;
-            infinadeckLocomotion.worldScale = worldScale;
+            infinadeckLocomotion.referenceRig = this.gameObject;
             infinadeckLocomotion.speedGain = speedGain;
             infinadeckLocomotion.infinadeckReferenceObj = refObjects.GetComponent<InfinadeckReferenceObjects>();
             infinadeckLocomotion.showCollisions = showCollisions;
@@ -317,7 +317,7 @@ public class InfinadeckCore : MonoBehaviour
         demo = Instantiate(Resources.Load("RuntimePrefabs/InfinaDEMO") as GameObject, transform.position, Quaternion.identity);
         demo.transform.parent = this.transform;
         infinaDEMO = demo.GetComponent<InfinaDEMO>();
-        infinaDEMO.holder = this.gameObject;
+        infinaDEMO.referenceRig = this.gameObject;
         infinaDEMO.iI = iI;
         infinaDEMO.preferences = preferences;
     }
@@ -512,7 +512,6 @@ public class InfinadeckCore : MonoBehaviour
             keybinds.all.Add(funcName, new InfinaDATA.DataEntry { EntryName = funcGroup, EntryValue = defaultKey, WriteFlag = true });
             // tell keybinds to reimport, now that it knows about this keybind, to grab the user preferred keybind if it exists
             keybinds.LoadSettings();
-            Debug.Log(funcName + "_" + funcGroup + "_" + defaultKey + " assigned");
         }
         return Input.GetKeyDown(StringToKey(keybinds.ReadString(funcName)));
     }

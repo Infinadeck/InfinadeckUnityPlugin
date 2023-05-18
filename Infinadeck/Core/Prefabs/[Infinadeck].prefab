@@ -54,9 +54,6 @@ MonoBehaviour:
   firstLevel: 1
   movementLevel: 1
   guaranteeDestroyOnLoad: 0
-  correctPosition: 0
-  correctRotation: 0
-  correctScale: 0
   showCollisions: 0
   showTreadmillVelocity: 0
   guiOutput: 
@@ -66,7 +63,9 @@ MonoBehaviour:
   cameraRig: {fileID: 0}
   headset: {fileID: 0}
   speedGain: 1
-  worldScale: {x: 1, y: 1, z: 1}
+  originOffsetPosition: {x: 0, y: 0, z: 0}
+  originOffsetRotation: {x: 0, y: 0, z: 0}
+  originOffsetScale: {x: 1, y: 1, z: 1}
 --- !u!1001 &4838356386765045977
 PrefabInstance:
   m_ObjectHideFlags: 0

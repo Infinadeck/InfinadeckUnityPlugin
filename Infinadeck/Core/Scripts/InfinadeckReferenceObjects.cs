@@ -21,7 +21,7 @@ public class InfinadeckReferenceObjects : MonoBehaviour
     public GameObject heading;
     public Material syncMaterial;
     public GameObject deckModel;
-    public Vector3 worldScale = Vector3.one;
+    public GameObject referenceRig;
     public float currentTreadmillSpeed;
     public SkinnedMeshRenderer referencePanelSymbols;
     public SkinnedMeshRenderer referencePanelBand;
@@ -46,9 +46,26 @@ public class InfinadeckReferenceObjects : MonoBehaviour
     /**
      * Runs once on the object's first frame.
      */
-    void OnEnable() {
-        this.transform.localScale = worldScale;
+    void OnEnable()
+    {
         StartCoroutine(UpdateObjectModels());
+    }
+
+    private void Start()
+    {
+        if (!referenceRig)
+        {
+            Debug.LogWarning("INFINADECK WARNING: No RefObj ReferenceRig Assigned, Assuming Parent");
+            if (this.transform.parent == null)
+            {
+                Debug.LogWarning("INFINADECK WARNING: No RefObj Parent, Assuming Self");
+                referenceRig = this.gameObject;
+            }
+            else { referenceRig = this.transform.parent.gameObject; }
+        }
+        this.transform.localPosition = Vector3.zero;
+        this.transform.localRotation = Quaternion.identity;
+        this.transform.localScale = Vector3.one;
     }
 
     void OnDisable()

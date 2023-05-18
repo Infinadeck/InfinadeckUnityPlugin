@@ -20,16 +20,32 @@ public class InfinadeckSplashscreen : MonoBehaviour {
     public Text pluginVersion;
     public GameObject headset;
 
-    public Vector3 worldScale = Vector3.one;
+    public GameObject referenceRig;
 
     /**
      * Runs once on the object's first frame.
      */
-    void Start() {
+    private void Start()
+    {
+        if (!referenceRig)
+        {
+            Debug.LogWarning("INFINADECK WARNING: No Splashscreen ReferenceRig Assigned, Assuming Parent");
+            if (this.transform.parent == null)
+            {
+                Debug.LogWarning("INFINADECK WARNING: No Splashscreen Parent, Assuming Self");
+                referenceRig = this.gameObject;
+            }
+            else { referenceRig = this.transform.parent.gameObject; }
+        }
+        this.transform.localPosition = Vector3.zero;
+        this.transform.localRotation = Quaternion.identity;
+        this.transform.localScale = Vector3.one;
+
         // position the splashscreen such that it's visible.
         this.transform.eulerAngles = new Vector3(0, headset.transform.eulerAngles.y, 0);
-        this.transform.position += new Vector3(0, headset.transform.position.y, 0);
-        this.transform.localScale = worldScale;
+        //this.transform.eulerAngles = new Vector3(0, headset.transform.eulerAngles.y, 0);
+        this.transform.position = new Vector3(referenceRig.transform.position.x, headset.transform.position.y, referenceRig.transform.position.z);
+        //this.transform.position += new Vector3(0, headset.transform.position.y, 0);
         Destroy(this.gameObject, 3.0f);
     }
 

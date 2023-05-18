@@ -11,7 +11,7 @@ public class InfinaDEMO : MonoBehaviour
     public Text DTRTextE;
     public Text DTRTextS;
     public Text DTRTextW;
-    public GameObject holder;
+    public GameObject referenceRig;
     public int demoTimeRemaining = 120;
     public int demoTime = 120;
     private bool init = false;
@@ -20,19 +20,26 @@ public class InfinaDEMO : MonoBehaviour
     public InfinaDATA preferences;
     public InfinadeckInterpreter iI;
 
-
+    private void Start()
+    {
+        if (!referenceRig)
+        {
+            Debug.LogWarning("INFINADECK WARNING: No Splashscreen ReferenceRig Assigned, Assuming Parent");
+            if (this.transform.parent == null)
+            {
+                Debug.LogWarning("INFINADECK WARNING: No Splashscreen Parent, Assuming Self");
+                referenceRig = this.gameObject;
+            }
+            else { referenceRig = this.transform.parent.gameObject; }
+        }
+        this.transform.localPosition = Vector3.zero;
+        this.transform.localRotation = Quaternion.identity;
+        this.transform.localScale = Vector3.one;
+        init = true;
+    }
 
     void OnEnable()
     {
-        if (FindObjectOfType<InfinadeckReferenceObjects>())
-        {
-            holder = FindObjectOfType<InfinadeckReferenceObjects>().gameObject;
-            this.transform.parent = holder.transform;
-            this.transform.localPosition = Vector3.zero;
-            this.transform.localRotation = Quaternion.identity;
-            this.transform.localScale = Vector3.one;
-        }
-        init = true;
         StartCoroutine(DecrementDemoTime());
     }
 
