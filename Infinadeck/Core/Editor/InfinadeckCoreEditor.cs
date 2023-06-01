@@ -34,7 +34,7 @@ public class InfinadeckMasterEditor : Editor
 
     void OnEnable()
     {
-        pluginVersion = serializedObject.FindProperty("pluginVersion");
+        pluginVersion = serializedObject.FindProperty("pluginVersionForEditorReference");
         cameraRig = serializedObject.FindProperty("cameraRig");
         headset = serializedObject.FindProperty("headset");
         originOffsetPosition = serializedObject.FindProperty("originOffsetPosition");

@@ -15,7 +15,8 @@ using UnityEngine.SceneManagement;
 
 public class InfinadeckCore : MonoBehaviour
 {
-    [InfReadOnlyInEditor] public string pluginVersion = "3.3.0";
+    readonly string pluginVersion = "3.3.1";
+    public string pluginVersionForEditorReference;
     [InfReadOnlyInEditor] public GameObject refObjects;
     [InfReadOnlyInEditor] public GameObject locomotion;
     [InfReadOnlyInEditor] public GameObject splashScreen;
@@ -56,6 +57,9 @@ public class InfinadeckCore : MonoBehaviour
     public Vector3 originOffsetScale = Vector3.one;
 
     private Texture2D textBG;
+
+    private void Reset() { pluginVersionForEditorReference = pluginVersion; }
+    private void OnValidate() { pluginVersionForEditorReference = pluginVersion; }
 
     /**
      * Runs upon the moment of creation of this object.
@@ -641,7 +645,7 @@ public class InfinadeckCore : MonoBehaviour
                         + "Infinadeck Plugin enabled, but IDA is not open\n"
                         + "\n"
                         + "Download IDA (Infinadeck Desktop Application)\n"
-                        + "<b>https://tinyurl.com/InfinadeckPlugin</b>\n"
+                        + "<b>https://tinyurl.com/Infinadeck</b>\n"
                         + "\n"
                         + "<color=grey>(OR Disable the plugin by pressing Ctrl+I)</color>\n"
                         + "\n"

@@ -22,6 +22,6 @@ public class InfinadeckPluginVersion : MonoBehaviour
     void Update()
     {
         if (!core) { core = FindObjectOfType<InfinadeckCore>(); }
-        else { version.text = core.pluginVersion; }
+        else { version.text = core.pluginVersionForEditorReference; }
     }
 }
